@@ -501,7 +501,7 @@ export default function App() {
   const sp    = SPOTS[sk];
 
   const bg   = {background:`linear-gradient(165deg,#041828 0%,#020d1a 65%)`,minHeight:"100vh",fontFamily:"'DM Mono',monospace",color:C.pearl};
-  const mn   = (sz,col=C.pearl,ex={})=>({fontFamily:"'Syne',sans-serif",fontSize:sz,fontWeight:800,color:col,lineHeight:1,...ex});
+  const mn   = (sz,col=C.pearl,ex={})=>({fontFamily:"'Syne',sans-serif",fontSize:sz,fontWeight:700,color:col,lineHeight:1,...ex});
   const sm   = (sz,col=C.mist,ex={})=>({fontSize:sz,color:col,...ex});
   const pill = (ex={})=>({background:C.g2,border:`1px solid ${C.g1}`,borderRadius:14,padding:12,...ex});
   const nav  = <TopNav sk={sk} spots={SPOTS} defaultLoc={prefs.defaultLocation} prefs={prefs} onSpot={k=>{setSk(k);}} onSettings={()=>setScreen(screen==="settings"?"conditions":"settings")} screen={screen} onBack={()=>setScreen("conditions")}/>;
@@ -509,7 +509,7 @@ export default function App() {
   // ── CONDITIONS ─────────────────────────────────────────────────────────────
   if(screen==="conditions") return(
     <div style={bg}>
-      <style>{`*{box-sizing:border-box;margin:0;padding:0}::-webkit-scrollbar{display:none}input::placeholder{color:rgba(127,179,200,.4)}input:focus{outline:none;border-color:rgba(0,212,200,.5)!important}`}</style>
+      <style>{`*{box-sizing:border-box;margin:0;padding:0}::-webkit-scrollbar{display:none}input::placeholder{color:rgba(127,179,200,.4)}input:focus{outline:none;border-color:rgba(0,212,200,.5)!important}body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}`}</style>
       {nav}
       <div style={{padding:"12px 16px 0"}}>
         {/* Status banner */}
@@ -721,7 +721,7 @@ export default function App() {
     const inp={width:"100%",background:C.g2,border:`1px solid ${C.g1}`,borderRadius:10,padding:"9px 12px",color:C.pearl,fontSize:".70rem",fontFamily:"'DM Mono',monospace",letterSpacing:".04em"};
     return(
       <div style={bg}>
-        <style>{`*{box-sizing:border-box;margin:0;padding:0}::-webkit-scrollbar{display:none}input::placeholder{color:rgba(127,179,200,.4)}input:focus{outline:none;border-color:rgba(0,212,200,.5)!important}`}</style>
+        <style>{`*{box-sizing:border-box;margin:0;padding:0}::-webkit-scrollbar{display:none}input::placeholder{color:rgba(127,179,200,.4)}input:focus{outline:none;border-color:rgba(0,212,200,.5)!important}body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}`}</style>
         {nav}
         <div style={{padding:"12px 16px 0"}}>
           {/* Locations */}
