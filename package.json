@@ -12,6 +12,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@netlify/blobs": "^8.1.0",
     "@vitejs/plugin-react": "^4.2.1",
     "vite": "^5.1.4"
   }

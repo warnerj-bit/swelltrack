@@ -94,10 +94,55 @@ const rateWaves=(wH,per,ws)=>{
 };
 
 // ── tide model ────────────────────────────────────────────────────────────────
-const tideAt  = (h,off=0) => { const t=(h+off*0.84)*2*Math.PI/24; return Math.max(0,0.55*Math.sin(2*t-2.1)+0.15*Math.sin(2*t-2.8)+0.18*Math.sin(t+0.5)+0.12*Math.sin(t-0.8)+0.8); };
-const tideCurve=(off=0,n=200)=>Array.from({length:n+1},(_,i)=>({h:i/n*24,ht:tideAt(i/n*24,off)}));
-const tideTurns=pts=>{const o=[];for(let i=1;i<pts.length-1;i++){const p=pts[i-1].ht,c=pts[i].ht,nx=pts[i+1].ht;if(c>p&&c>nx)o.push({h:pts[i].h,ht:pts[i].ht,type:"high"});else if(c<p&&c<nx)o.push({h:pts[i].h,ht:pts[i].ht,type:"low"});}return o;};
-const sunAt   = (lat,lng) => {
+// ── WorldTides API ────────────────────────────────────────────────────────────
+// Tide data fetched via /api/tides (Netlify Function with server-side caching)
+
+// Fetch tides via our Netlify cached proxy (calls WorldTides once/day, caches for all users)
+const fetchTides = async (lat, lng) => {
+  const url = `/api/tides?lat=${lat.toFixed(4)}&lng=${lng.toFixed(4)}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Tide proxy error ${res.status}`);
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+  return data;
+};
+
+// Convert WorldTides hourly heights into a curve for a given day offset (0=today)
+// Returns [{h, ht}] where h is hours 0-24 local AEDT, ht is metres
+const tideCurveFromWT = (wtData, dayOff=0) => {
+  if (!wtData?.heights?.length) return fallbackCurve(dayOff);
+  const startOfDay = aedt();
+  startOfDay.setUTCHours(0,0,0,0);
+  startOfDay.setTime(startOfDay.getTime() - TZ*3600000); // back to UTC midnight local
+  const dayStart = Math.floor(startOfDay.getTime()/1000) + dayOff*86400;
+  const dayEnd   = dayStart + 86400;
+  const pts = wtData.heights
+    .filter(p => p.dt >= dayStart && p.dt < dayEnd)
+    .map(p => ({ h: ((p.dt - dayStart) / 3600), ht: p.height }));
+  if (pts.length < 2) return fallbackCurve(dayOff);
+  return pts;
+};
+
+// Extract extremes (high/low turns) for a given day offset
+const turnsFromWT = (wtData, dayOff=0) => {
+  if (!wtData?.extremes?.length) return [];
+  const startOfDay = aedt();
+  startOfDay.setUTCHours(0,0,0,0);
+  startOfDay.setTime(startOfDay.getTime() - TZ*3600000);
+  const dayStart = Math.floor(startOfDay.getTime()/1000) + dayOff*86400;
+  const dayEnd   = dayStart + 86400;
+  return wtData.extremes
+    .filter(e => e.dt >= dayStart && e.dt < dayEnd)
+    .map(e => ({ h: (e.dt - dayStart)/3600, ht: e.height, type: e.type==="High"?"high":"low" }));
+};
+
+// Fallback harmonic model if WorldTides unavailable
+const tideAt = (h, off=0) => { const t=(h+off*0.84)*2*Math.PI/24; return Math.max(0,0.55*Math.sin(2*t-2.1)+0.15*Math.sin(2*t-2.8)+0.18*Math.sin(t+0.5)+0.12*Math.sin(t-0.8)+0.8); };
+const fallbackCurve = (off=0,n=48) => Array.from({length:n+1},(_,i)=>({h:i/n*24,ht:tideAt(i/n*24,off)}));
+const tideCurve = (off=0) => fallbackCurve(off); // used only if no wtData
+const tideTurns = pts => { const o=[];for(let i=1;i<pts.length-1;i++){const p=pts[i-1].ht,c=pts[i].ht,nx=pts[i+1].ht;if(c>p&&c>nx)o.push({h:pts[i].h,ht:pts[i].ht,type:"high"});else if(c<p&&c<nx)o.push({h:pts[i].h,ht:pts[i].ht,type:"low"});}return o;};
+
+const sunAt = (lat,lng) => {
   const d=aedt(),doy=Math.ceil((d-new Date(Date.UTC(d.getUTCFullYear(),0,1)))/86400000);
   const B=(360/365)*(doy-81)*Math.PI/180,eot=9.87*Math.sin(2*B)-7.53*Math.cos(B)-1.5*Math.sin(B);
   const noon=720-(4*lng+eot),lr=lat*Math.PI/180,decl=23.45*Math.sin(B)*Math.PI/180;
@@ -198,7 +243,7 @@ const CompassPanel=({deg,col,label,rows,size=44})=>(
 );
 
 // ── TideChart canvas ──────────────────────────────────────────────────────────
-const TideChart=({dayOff,spotData,h=110})=>{
+const TideChart=({dayOff,spotData,wtData,h=110})=>{
   const ref=useRef(null);
   useEffect(()=>{
     const cv=ref.current;if(!cv)return;
@@ -206,7 +251,8 @@ const TideChart=({dayOff,spotData,h=110})=>{
     cv.width=W;cv.height=h;
     const ctx=cv.getContext("2d");
     const P={l:8,r:8,t:28,b:4},MIN=0,MAX=2.5,NOW=nowH();
-    const pts=tideCurve(dayOff),turns=tideTurns(pts);
+    const pts = wtData ? tideCurveFromWT(wtData,dayOff) : tideCurve(dayOff);
+    const turns = wtData ? turnsFromWT(wtData,dayOff) : tideTurns(pts);
     const sp=spotData,sun=sp?sunAt(sp.lat,sp.lng):{fl:5,sr:6,ss:20,ll:21};
     const p2x=(hr,ht)=>({x:P.l+(hr/24)*(W-P.l-P.r),y:P.t+(1-(ht-MIN)/(MAX-MIN))*(h-P.t-P.b)});
     ctx.clearRect(0,0,W,h);
@@ -231,7 +277,13 @@ const TideChart=({dayOff,spotData,h=110})=>{
     pts.forEach(p=>{if(dayOff===0&&p.h<NOW-.05)return;const{x,y}=p2x(p.h,p.ht);if(!go){ctx.moveTo(x,y);go=true;}else ctx.lineTo(x,y);});
     ctx.strokeStyle=C.teal;ctx.lineWidth=2.2;ctx.lineJoin="round";ctx.shadowColor=C.teal;ctx.shadowBlur=5;ctx.stroke();ctx.restore();
     if(dayOff===0){
-      const np=p2x(NOW,tideAt(NOW,0));
+      const nowHt = (() => {
+        const idx=pts.findIndex(p=>p.h>NOW);
+        if(idx<=0) return pts[0]?.ht??0;
+        const a=pts[idx-1],b=pts[idx];
+        return a.ht+(b.ht-a.ht)*((NOW-a.h)/(b.h-a.h));
+      })();
+      const np=p2x(NOW,nowHt);
       ctx.save();ctx.strokeStyle="rgba(245,166,35,.6)";ctx.lineWidth=1.2;ctx.setLineDash([3,4]);
       ctx.beginPath();ctx.moveTo(np.x,P.t);ctx.lineTo(np.x,h-P.b);ctx.stroke();ctx.restore();
       ctx.save();ctx.fillStyle=C.amber;ctx.shadowColor=C.amber;ctx.shadowBlur=7;
@@ -361,6 +413,7 @@ export default function App() {
   const [selDay,  setSelDay]  = useState(0);
   const [status,  setStatus]  = useState("loading"); // "loading"|"live"|"offline"
   const [loadMsg, setLoadMsg] = useState("Fetching live conditions…");
+  const [wtData,  setWtData]  = useState(null); // WorldTides response
   const [clk,     setClk]     = useState(clockStr(false));
   // Settings form state (must be at top level)
   const [addOpen, setAddOpen] = useState(false);
@@ -378,15 +431,25 @@ export default function App() {
     setStatus("loading");
     setLoadMsg("Fetching live conditions…");
     setSelDay(0);
+    setWtData(null);
     const sp = buildSpots(prefs)[spotKey] || DEFAULT_SPOTS.torquay;
-    try {
-      setLoadMsg("Connecting to Open-Meteo…");
-      const d = await fetchLive(sp.lat, sp.lng);
-      setDs(d); setHourly(d.hourly7[0]); setStatus("live");
-    } catch(e) {
+    // Fetch wave/wind and tides in parallel
+    const [waveResult, tideResult] = await Promise.allSettled([
+      fetchLive(sp.lat, sp.lng),
+      fetchTides(sp.lat, sp.lng),
+    ]);
+    if (waveResult.status === "fulfilled") {
+      setDs(waveResult.value);
+      setHourly(waveResult.value.hourly7[0]);
+      setStatus("live");
+    } else {
       const d = mkDataset(spotKey);
       setDs(d); setHourly(d.hourly7[0]); setStatus("offline");
     }
+    if (tideResult.status === "fulfilled") {
+      setWtData(tideResult.value);
+    }
+    // else wtData stays null → falls back to harmonic model
   };
 
   useEffect(()=>{ load(sk); },[sk]);
@@ -413,9 +476,23 @@ export default function App() {
 
   const {cond,wave7,wind7} = ds;
   const NOW   = nowH();
-  const curT  = tideAt(NOW,0);
-  const rising= curT>tideAt(NOW-0.3,0);
-  const turns0= tideTurns(tideCurve(0));
+  // Use real WorldTides data if available, else harmonic fallback
+  const todayCurve = wtData ? tideCurveFromWT(wtData,0) : tideCurve(0);
+  const curT  = (() => {
+    if (!wtData) return tideAt(NOW,0);
+    const pts = todayCurve;
+    const idx = pts.findIndex(p=>p.h>NOW);
+    if(idx<=0) return pts[0]?.ht??0;
+    const a=pts[idx-1],b=pts[idx];
+    return a.ht+(b.ht-a.ht)*((NOW-a.h)/(b.h-a.h));
+  })();
+  const rising= (() => {
+    if (!wtData) return curT>tideAt(NOW-0.5,0);
+    const pts = todayCurve;
+    const prev = pts.filter(p=>p.h<=NOW).slice(-1)[0];
+    return prev ? curT > prev.ht : true;
+  })();
+  const turns0= wtData ? turnsFromWT(wtData,0) : tideTurns(tideCurve(0));
   const nextT = turns0.filter(t=>t.h>NOW).slice(0,3);
   const wc    = cond.windDir!=null?windClass(cond.windDir,sk,SPOTS):"cross";
   const wcol  = wCol(wc);
@@ -485,7 +562,7 @@ export default function App() {
 
   // ── TIDES & WIND ───────────────────────────────────────────────────────────
   if(screen==="tidewind"){
-    const dPts=tideCurve(selDay);
+    const dPts = wtData ? tideCurveFromWT(wtData,selDay) : tideCurve(selDay);
     const hiT=Math.max(...dPts.map(p=>p.ht)).toFixed(1);
     const loT=Math.min(...dPts.map(p=>p.ht)).toFixed(1);
     const dW=wind7[selDay]||{};
@@ -493,7 +570,7 @@ export default function App() {
     const dWc=wCol(dWt);
     const maxS=Math.max(...hourly.map(d=>d.speed),10);
     const MAX_S=Math.ceil(maxS/5)*5+5;
-    const nextTd=selDay===0?nextT:tideTurns(dPts).filter(t=>t.h>12).slice(0,3);
+    const nextTd=selDay===0?nextT:(wtData?turnsFromWT(wtData,selDay):tideTurns(dPts)).filter(t=>t.h>(selDay===0?NOW:0)).slice(0,3);
     return(
       <div style={bg}>
         <style>{`*{box-sizing:border-box;margin:0;padding:0}::-webkit-scrollbar{display:none}`}</style>
@@ -546,7 +623,7 @@ export default function App() {
               <span style={sm(".39rem")}>0–{fmtWN2(MAX_S,prefs.windUnit)} {fmtWU2(prefs.windUnit)}</span>
             </div>
             <div style={sm(".36rem","rgba(0,212,200,.55)",{letterSpacing:".08em",textTransform:"uppercase",marginBottom:2})}>TIDE (m)</div>
-            <TideChart key={`t${sk}${selDay}`} dayOff={selDay} spotData={sp} h={108}/>
+            <TideChart key={`t${sk}${selDay}`} dayOff={selDay} spotData={sp} wtData={wtData} h={108}/>
             <div style={sm(".36rem","rgba(0,212,200,.45)",{letterSpacing:".08em",textTransform:"uppercase",margin:"3px 0 2px"})}>WIND ({fmtWU2(prefs.windUnit).toUpperCase()}) · max {fmtWN2(MAX_S,prefs.windUnit)}</div>
             <WindBars key={`w${sk}${selDay}`} data={hourly} sk={sk} spotsMap={SPOTS} dayOff={selDay} h={74}/>
           </div>
@@ -604,7 +681,7 @@ export default function App() {
           <div style={{display:"flex",gap:5,overflowX:"auto",paddingBottom:4}}>
             {wave7.map((wd,i)=>{
               const wday=wind7[i]||{};
-              const p2=tideCurve(i);
+              const p2 = wtData ? tideCurveFromWT(wtData,i) : tideCurve(i);
               const hi2=Math.max(...p2.map(p=>p.ht)).toFixed(1);
               const lo2=Math.min(...p2.map(p=>p.ht)).toFixed(1);
               const wdir=wday.windDir;
@@ -748,7 +825,7 @@ export default function App() {
       <div style={{padding:"24px 16px 0",display:"flex",flexDirection:"column",gap:10}}>
         {[
           {icon:"🌊",title:"Wave & Wind Data",body:"Powered by Open-Meteo Marine API. Free, no API key required. Updated twice daily. 7-day hourly forecasts at 5 km resolution."},
-          {icon:"🌊",title:"Tide Model",body:"Tidal heights are computed from a harmonic model tuned for Bass Strait using M2, S2, K1 and O1 tidal constituents. Results are approximate and should not be used for navigation."},
+          {icon:"🌊",title:"Tide Data",body:"Tidal heights and high/low predictions are sourced from WorldTides (worldtides.info), using real tide station data. Results are for reference only and should not be used for navigation."},
           {icon:"☀️",title:"Sun Times",body:"Sunrise, sunset, first light and last light are calculated mathematically from the location coordinates and current date."},
           {icon:"📍",title:"Supported Locations",body:"Torquay Main, Point Impossible and Bells Beach are built-in. Add custom locations worldwide using any GPS coordinates."},
         ].map(({icon,title,body})=>(
