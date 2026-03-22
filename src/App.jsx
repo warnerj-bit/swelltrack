@@ -230,12 +230,12 @@ const CompassPanel=({deg,col,label,rows,size=44})=>(
       </div>
     </div>
     <div style={{fontFamily:"'Syne',sans-serif",fontSize:".72rem",fontWeight:800,color:col,letterSpacing:"-.02em"}}>{compass(deg)}</div>
-    <div style={{fontSize:".34rem",color:C.mist,letterSpacing:".06em",textTransform:"uppercase"}}>{label}</div>
+    <div style={{fontSize:".70rem",color:C.mist,letterSpacing:".06em",textTransform:"uppercase"}}>{label}</div>
     <div style={{display:"flex",flexDirection:"column",gap:3,width:"100%",marginTop:2}}>
       {rows.map(([k,v,vc])=>(
         <div key={k} style={{display:"flex",justifyContent:"space-between",background:`${col}10`,borderRadius:7,padding:"3px 6px"}}>
-          <span style={{fontSize:".34rem",color:C.mist}}>{k}</span>
-          <span style={{fontFamily:"'Syne',sans-serif",fontSize:".58rem",fontWeight:800,color:vc||col}}>{v}</span>
+          <span style={{fontSize:".70rem",color:C.mist}}>{k}</span>
+          <span style={{fontFamily:"'Syne',sans-serif",fontSize:".76rem",fontWeight:800,color:vc||col}}>{v}</span>
         </div>
       ))}
     </div>
@@ -334,7 +334,7 @@ const LoadingScreen=({spotName,status})=>(
     <style>{`@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}`}</style>
     <div style={{width:48,height:48,border:`3px solid ${C.g1}`,borderTop:`3px solid ${C.teal}`,borderRadius:"50%",animation:"spin 1s linear infinite"}}/>
     <div style={{fontFamily:"'Syne',sans-serif",fontSize:"1rem",fontWeight:800,color:C.pearl}}>{spotName}</div>
-    <div style={{fontSize:".54rem",color:C.teal,letterSpacing:".18em",textTransform:"uppercase",animation:"pulse 2s ease-in-out infinite"}}>{status}</div>
+    <div style={{fontSize:".72rem",color:C.teal,letterSpacing:".18em",textTransform:"uppercase",animation:"pulse 2s ease-in-out infinite"}}>{status}</div>
   </div>
 );
 
@@ -343,10 +343,10 @@ const OfflineBanner=({onRetry})=>(
   <div style={{margin:"0 14px 10px",background:"rgba(255,107,107,.07)",border:`1px solid rgba(255,107,107,.25)`,borderRadius:12,padding:"10px 14px",display:"flex",alignItems:"center",gap:10}}>
     <span style={{fontSize:"1rem"}}>⚠️</span>
     <div style={{flex:1}}>
-      <div style={{fontSize:".48rem",color:C.coral,fontWeight:600,letterSpacing:".04em"}}>Live data unavailable</div>
-      <div style={{fontSize:".42rem",color:C.mist,marginTop:2}}>Showing modelled data — check your connection</div>
+      <div style={{fontSize:".66rem",color:C.coral,fontWeight:600,letterSpacing:".04em"}}>Live data unavailable</div>
+      <div style={{fontSize:".60rem",color:C.mist,marginTop:2}}>Showing modelled data — check your connection</div>
     </div>
-    <div onClick={onRetry} style={{fontSize:".44rem",color:C.teal,cursor:"pointer",padding:"5px 10px",border:`1px solid rgba(0,212,200,.3)`,borderRadius:8,whiteSpace:"nowrap",letterSpacing:".06em"}}>Retry</div>
+    <div onClick={onRetry} style={{fontSize:".62rem",color:C.teal,cursor:"pointer",padding:"5px 10px",border:`1px solid rgba(0,212,200,.3)`,borderRadius:8,whiteSpace:"nowrap",letterSpacing:".06em"}}>Retry</div>
   </div>
 );
 
@@ -359,7 +359,7 @@ const TopNav=({sk,spots,defaultLoc,prefs,onSpot,onSettings,screen,onBack})=>(
         ?<div style={{fontFamily:"'Syne',sans-serif",fontSize:".88rem",fontWeight:800,color:C.pearl,letterSpacing:"-.02em",flexShrink:0}}>
             Swell<span style={{color:C.teal}}>Track</span>
           </div>
-        :<div onClick={onBack} style={{fontSize:".58rem",color:C.teal,cursor:"pointer",flexShrink:0,letterSpacing:".04em"}}>‹ Back</div>
+        :<div onClick={onBack} style={{fontSize:".76rem",color:C.teal,cursor:"pointer",flexShrink:0,letterSpacing:".04em"}}>‹ Back</div>
       }
       <div style={{flex:1}}/>
       {/* Screen title for detail screens */}
@@ -375,8 +375,8 @@ const TopNav=({sk,spots,defaultLoc,prefs,onSpot,onSettings,screen,onBack})=>(
     {screen==="conditions" &&
       <div style={{display:"flex",gap:5,padding:"8px 14px 10px",overflowX:"auto",scrollbarWidth:"none"}}>
         {Object.entries(spots).map(([k,s])=>(
-          <div key={k} onClick={()=>onSpot(k)} style={{flexShrink:0,display:"flex",alignItems:"center",gap:4,borderRadius:20,padding:"4px 12px",fontSize:".5rem",cursor:"pointer",whiteSpace:"nowrap",background:k===sk?"rgba(0,212,200,.15)":C.g2,border:`1px solid ${k===sk?"rgba(0,212,200,.5)":C.g1}`,color:k===sk?C.teal:C.mist,letterSpacing:".04em"}}>
-            {k===defaultLoc&&<span style={{fontSize:".55rem"}}>★</span>}
+          <div key={k} onClick={()=>onSpot(k)} style={{flexShrink:0,display:"flex",alignItems:"center",gap:4,borderRadius:20,padding:"4px 12px",fontSize:".68rem",cursor:"pointer",whiteSpace:"nowrap",background:k===sk?"rgba(0,212,200,.15)":C.g2,border:`1px solid ${k===sk?"rgba(0,212,200,.5)":C.g1}`,color:k===sk?C.teal:C.mist,letterSpacing:".04em"}}>
+            {k===defaultLoc&&<span style={{fontSize:".72rem"}}>★</span>}
             {s.name}
           </div>
         ))}
@@ -390,12 +390,12 @@ const ToggleRow=({label,icon,options,current,onChange})=>(
   <div style={{display:"flex",flexDirection:"column",gap:8,padding:"14px 0",borderBottom:`1px solid ${C.g1}`}}>
     <div style={{display:"flex",alignItems:"center",gap:8}}>
       <span style={{fontSize:"1rem"}}>{icon}</span>
-      <span style={{fontSize:".5rem",color:C.pearl,letterSpacing:".04em"}}>{label}</span>
+      <span style={{fontSize:".68rem",color:C.pearl,letterSpacing:".04em"}}>{label}</span>
     </div>
     <div style={{display:"flex",gap:6}}>
       {options.map(([val,lbl])=>{
         const active=current===val;
-        return <div key={val} onClick={()=>onChange(val)} style={{flex:1,textAlign:"center",padding:"8px 4px",borderRadius:10,cursor:"pointer",background:active?"rgba(0,212,200,.15)":C.g2,border:`1px solid ${active?"rgba(0,212,200,.55)":C.g1}`,color:active?C.teal:C.mist,fontSize:".52rem",fontWeight:active?"600":"400",letterSpacing:".04em"}}>{lbl}</div>;
+        return <div key={val} onClick={()=>onChange(val)} style={{flex:1,textAlign:"center",padding:"8px 4px",borderRadius:10,cursor:"pointer",background:active?"rgba(0,212,200,.15)":C.g2,border:`1px solid ${active?"rgba(0,212,200,.55)":C.g1}`,color:active?C.teal:C.mist,fontSize:".70rem",fontWeight:active?"600":"400",letterSpacing:".04em"}}>{lbl}</div>;
       })}
     </div>
   </div>
@@ -515,12 +515,12 @@ export default function App() {
         {/* Status banner */}
         {status==="offline"&&<OfflineBanner onRetry={()=>load(sk)}/>}
         {/* Rating */}
-        <div style={{display:"inline-flex",alignItems:"center",gap:5,background:`${rat.c}18`,border:`1px solid ${rat.c}44`,borderRadius:18,padding:"3px 10px",fontSize:".5rem",color:rat.c,textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>
+        <div style={{display:"inline-flex",alignItems:"center",gap:5,background:`${rat.c}18`,border:`1px solid ${rat.c}44`,borderRadius:18,padding:"3px 10px",fontSize:".68rem",color:rat.c,textTransform:"uppercase",letterSpacing:".1em",marginBottom:8}}>
           <div style={{width:4,height:4,borderRadius:"50%",background:rat.c}}/>{rat.t}
         </div>
         {/* Wave hero + compass panels */}
         <div style={mn("3rem")}>{fmtWN(cond.waveH||0,prefs.waveUnit)}<span style={{fontSize:"1.2rem",fontWeight:400,color:C.mist}}> {fmtWU(prefs.waveUnit)}</span></div>
-        <div style={sm(".52rem",C.mist,{marginTop:2,marginBottom:10})}>{cond.period?`${Math.round(cond.period)}s period`:"—"}</div>
+        <div style={sm(".70rem",C.mist,{marginTop:2,marginBottom:10})}>{cond.period?`${Math.round(cond.period)}s period`:"—"}</div>
         <div style={{display:"flex",gap:8,marginBottom:10}}>
           <CompassPanel deg={cond.windDir??0} col={wcol} label="wind dir" rows={[["speed",fmtWind(cond.windSpeed,prefs.windUnit),wcol],["type",wcLbl(wc),wcol]]}/>
           <CompassPanel deg={cond.waveDir??225} col={C.teal} label="swell dir" rows={[["wave",`${fmtWN(cond.waveH||0,prefs.waveUnit)}${fmtWU(prefs.waveUnit)}`,C.teal],["swell",`${fmtWN(cond.swellHeight||0,prefs.waveUnit)}${fmtWU(prefs.waveUnit)}`,C.teal2],["period",cond.swellPeriod?`${Math.round(cond.swellPeriod)}s`:"—",C.teal]]}/>
@@ -535,24 +535,24 @@ export default function App() {
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
           <div onClick={()=>setScreen("tidewind")} style={pill({gridColumn:"1/-1",display:"flex",alignItems:"center",cursor:"pointer",border:`1px solid rgba(0,212,200,.22)`,background:"rgba(0,212,200,.04)"})}>
             <div style={{flex:1}}>
-              <div style={sm(".43rem",C.mist,{letterSpacing:".1em",textTransform:"uppercase",marginBottom:4})}>🌊 Tides &amp; 💨 Wind</div>
-              <div style={{display:"flex",alignItems:"baseline",gap:7,marginBottom:3}}><span style={mn("1.1rem")}>{curT.toFixed(2)}m</span><span style={sm(".46rem")}>{rising?"↑ Rising":"↓ Falling"}</span></div>
-              <div style={{display:"flex",alignItems:"baseline",gap:7}}><span style={mn("1.1rem",wcol)}>{fmtWind(cond.windSpeed,prefs.windUnit)}</span><span style={sm(".46rem")}>{cond.windDir!=null?`${compass(cond.windDir)} · ${wcLbl(wc)}`:"—"}</span></div>
+              <div style={sm(".62rem",C.mist,{letterSpacing:".1em",textTransform:"uppercase",marginBottom:4})}>🌊 Tides &amp; 💨 Wind</div>
+              <div style={{display:"flex",alignItems:"baseline",gap:7,marginBottom:3}}><span style={mn("1.1rem")}>{curT.toFixed(2)}m</span><span style={sm(".64rem")}>{rising?"↑ Rising":"↓ Falling"}</span></div>
+              <div style={{display:"flex",alignItems:"baseline",gap:7}}><span style={mn("1.1rem",wcol)}>{fmtWind(cond.windSpeed,prefs.windUnit)}</span><span style={sm(".64rem")}>{cond.windDir!=null?`${compass(cond.windDir)} · ${wcLbl(wc)}`:"—"}</span></div>
               <div style={{height:2,background:"rgba(255,255,255,.07)",borderRadius:1,marginTop:6}}><div style={{height:"100%",width:`${Math.min(100,Math.round(curT/2.5*100))}%`,background:`linear-gradient(90deg,${C.teal2},${C.teal})`,borderRadius:1}}/></div>
             </div>
-            <span style={sm(".42rem","rgba(0,212,200,.5)",{paddingLeft:12})}>Chart →</span>
+            <span style={sm(".60rem","rgba(0,212,200,.5)",{paddingLeft:12})}>Chart →</span>
           </div>
           <div style={pill()}>
             <div style={{fontSize:".9rem",marginBottom:4}}>🌡️</div>
-            <div style={sm(".43rem",C.mist,{letterSpacing:".1em",textTransform:"uppercase",marginBottom:2})}>Water Temp</div>
+            <div style={sm(".62rem",C.mist,{letterSpacing:".1em",textTransform:"uppercase",marginBottom:2})}>Water Temp</div>
             <div style={mn("1.1rem")}>{fmtTemp(cond.sst,prefs.tempUnit)}</div>
-            <div style={sm(".45rem",C.mist,{marginTop:2})}>{cond.sst!=null?wetsuit(cond.sst):"—"}</div>
+            <div style={sm(".62rem",C.mist,{marginTop:2})}>{cond.sst!=null?wetsuit(cond.sst):"—"}</div>
           </div>
           <div style={pill()}>
             <div style={{fontSize:".9rem",marginBottom:4}}>🔄</div>
-            <div style={sm(".43rem",C.mist,{letterSpacing:".1em",textTransform:"uppercase",marginBottom:2})}>Period</div>
+            <div style={sm(".62rem",C.mist,{letterSpacing:".1em",textTransform:"uppercase",marginBottom:2})}>Period</div>
             <div style={mn("1.1rem")}>{cond.swellPeriod!=null?`${Math.round(cond.swellPeriod)}s`:"—"}</div>
-            <div style={sm(".45rem",C.mist,{marginTop:2})}>{cond.waveDir!=null?`${compass(cond.waveDir)} swell`:"—"}</div>
+            <div style={sm(".62rem",C.mist,{marginTop:2})}>{cond.waveDir!=null?`${compass(cond.waveDir)} swell`:"—"}</div>
           </div>
         </div>
       </div>
@@ -580,55 +580,55 @@ export default function App() {
           {/* Hero */}
           <div style={{display:"flex",gap:8,marginBottom:8}}>
             <div style={{flex:1}}>
-              <div style={sm(".4rem",C.teal,{letterSpacing:".12em",textTransform:"uppercase",marginBottom:2})}>{selDay===0?"Tide now":`Tide · ${dayName(wave7[selDay]?.date||"")}`}</div>
+              <div style={sm(".76rem",C.teal,{letterSpacing:".12em",textTransform:"uppercase",marginBottom:2})}>{selDay===0?"Tide now":`Tide · ${dayName(wave7[selDay]?.date||"")}`}</div>
               {selDay===0
-                ?<><div style={mn("1.9rem")}>{curT.toFixed(2)}<span style={{fontSize:".85rem",fontWeight:400,color:C.mist}}>m</span></div><div style={sm(".5rem",C.teal,{marginTop:1})}>{rising?"↑ Rising":"↓ Falling"}</div></>
-                :<><div style={mn("1.9rem",C.teal)}>{hiT}<span style={{fontSize:".85rem",fontWeight:400,color:C.mist}}>m</span></div><div style={sm(".5rem",C.blue,{marginTop:1})}>▼ {loT}m low</div></>
+                ?<><div style={mn("1.9rem")}>{curT.toFixed(2)}<span style={{fontSize:".85rem",fontWeight:400,color:C.mist}}>m</span></div><div style={sm(".68rem",C.teal,{marginTop:1})}>{rising?"↑ Rising":"↓ Falling"}</div></>
+                :<><div style={mn("1.9rem",C.teal)}>{hiT}<span style={{fontSize:".85rem",fontWeight:400,color:C.mist}}>m</span></div><div style={sm(".68rem",C.blue,{marginTop:1})}>▼ {loT}m low</div></>
               }
             </div>
             <div style={{width:1,background:"rgba(255,255,255,.08)",margin:"4px 0"}}/>
             <div style={{flex:1,paddingLeft:8}}>
-              <div style={sm(".4rem",C.teal,{letterSpacing:".12em",textTransform:"uppercase",marginBottom:2})}>{selDay===0?"Wind now":`Wind · ${dayName(wind7[selDay]?.date||"")}`}</div>
+              <div style={sm(".76rem",C.teal,{letterSpacing:".12em",textTransform:"uppercase",marginBottom:2})}>{selDay===0?"Wind now":`Wind · ${dayName(wind7[selDay]?.date||"")}`}</div>
               <div style={mn("1.9rem")}>{selDay===0?fmtWN2(curW.speed,prefs.windUnit):(dW.windMax!=null?fmtWN2(dW.windMax,prefs.windUnit):"—")}<span style={{fontSize:".85rem",fontWeight:400,color:C.mist}}> {fmtWU2(prefs.windUnit)}</span></div>
-              <div style={sm(".5rem",selDay===0?wcol:dWc,{marginTop:1})}>{selDay===0?`${compass(curW.dir)} · ${wcLbl(wc)}`:(dW.windDir!=null?`${compass(dW.windDir)} · ${wcLbl(dWt)}`:"—")}</div>
+              <div style={sm(".68rem",selDay===0?wcol:dWc,{marginTop:1})}>{selDay===0?`${compass(curW.dir)} · ${wcLbl(wc)}`:(dW.windDir!=null?`${compass(dW.windDir)} · ${wcLbl(dWt)}`:"—")}</div>
             </div>
           </div>
           {/* Wave + swell strip */}
           <div style={{display:"flex",gap:0,background:C.g2,border:`1px solid ${C.g1}`,borderRadius:12,overflow:"hidden",marginBottom:8}}>
             <div style={{flex:1,padding:"8px 12px",borderRight:`1px solid ${C.g1}`}}>
-              <div style={sm(".35rem",C.mist,{letterSpacing:".1em",textTransform:"uppercase",marginBottom:2})}>🌊 Wave height</div>
-              <div style={{display:"flex",alignItems:"baseline",gap:4}}><span style={mn("1.05rem")}>{fmtWN(cond.waveH||0,prefs.waveUnit)}</span><span style={sm(".44rem")}>{fmtWU(prefs.waveUnit)}</span></div>
-              <div style={sm(".38rem",C.mist,{marginTop:1})}>Combined sea state</div>
+              <div style={sm(".70rem",C.mist,{letterSpacing:".1em",textTransform:"uppercase",marginBottom:2})}>🌊 Wave height</div>
+              <div style={{display:"flex",alignItems:"baseline",gap:4}}><span style={mn("1.05rem")}>{fmtWN(cond.waveH||0,prefs.waveUnit)}</span><span style={sm(".62rem")}>{fmtWU(prefs.waveUnit)}</span></div>
+              <div style={sm(".74rem",C.mist,{marginTop:1})}>Combined sea state</div>
             </div>
             <div style={{flex:1,padding:"8px 12px"}}>
-              <div style={sm(".35rem",C.mist,{letterSpacing:".1em",textTransform:"uppercase",marginBottom:2})}>📡 Swell height</div>
-              <div style={{display:"flex",alignItems:"baseline",gap:4}}><span style={mn("1.05rem",C.teal2)}>{fmtWN(cond.swellHeight||0,prefs.waveUnit)}</span><span style={sm(".44rem")}>{fmtWU(prefs.waveUnit)}</span>{cond.swellPeriod&&<span style={sm(".38rem",C.mist,{marginLeft:2})}>· {Math.round(cond.swellPeriod)}s</span>}</div>
-              <div style={sm(".38rem",C.mist,{marginTop:1})}>Groundswell only</div>
+              <div style={sm(".70rem",C.mist,{letterSpacing:".1em",textTransform:"uppercase",marginBottom:2})}>📡 Swell height</div>
+              <div style={{display:"flex",alignItems:"baseline",gap:4}}><span style={mn("1.05rem",C.teal2)}>{fmtWN(cond.swellHeight||0,prefs.waveUnit)}</span><span style={sm(".62rem")}>{fmtWU(prefs.waveUnit)}</span>{cond.swellPeriod&&<span style={sm(".74rem",C.mist,{marginLeft:2})}>· {Math.round(cond.swellPeriod)}s</span>}</div>
+              <div style={sm(".74rem",C.mist,{marginTop:1})}>Groundswell only</div>
             </div>
           </div>
           {/* Tide pills */}
           <div style={{display:"flex",gap:5,marginBottom:8}}>
             {nextTd.map((t,i)=>(
               <div key={i} style={{flex:1,background:t.type==="high"?"rgba(0,212,200,.06)":"rgba(79,156,245,.05)",border:`1px solid ${t.type==="high"?"rgba(0,212,200,.25)":"rgba(79,156,245,.2)"}`,borderRadius:10,padding:"5px 7px"}}>
-                <div style={sm(".37rem",t.type==="high"?C.teal:C.blue,{textTransform:"uppercase",marginBottom:1})}>{t.type==="high"?"▲ High":"▼ Low"}</div>
+                <div style={sm(".72rem",t.type==="high"?C.teal:C.blue,{textTransform:"uppercase",marginBottom:1})}>{t.type==="high"?"▲ High":"▼ Low"}</div>
                 <div style={mn(".72rem")}>{fmtH(t.h)}</div>
-                <div style={sm(".39rem")}>{t.ht.toFixed(2)}m</div>
+                <div style={sm(".74rem")}>{t.ht.toFixed(2)}m</div>
               </div>
             ))}
           </div>
           {/* Charts */}
           <div style={{marginBottom:2}}>
             <div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}>
-              <span style={sm(".39rem",C.mist,{letterSpacing:".08em",textTransform:"uppercase"})}>{selDay===0?"Today · Midnight–Midnight":dayName(wave7[selDay]?.date||"")+" · Full Day"}</span>
-              <span style={sm(".39rem")}>0–{fmtWN2(MAX_S,prefs.windUnit)} {fmtWU2(prefs.windUnit)}</span>
+              <span style={sm(".74rem",C.mist,{letterSpacing:".08em",textTransform:"uppercase"})}>{selDay===0?"Today · Midnight–Midnight":dayName(wave7[selDay]?.date||"")+" · Full Day"}</span>
+              <span style={sm(".74rem")}>0–{fmtWN2(MAX_S,prefs.windUnit)} {fmtWU2(prefs.windUnit)}</span>
             </div>
-            <div style={sm(".36rem","rgba(0,212,200,.55)",{letterSpacing:".08em",textTransform:"uppercase",marginBottom:2})}>TIDE (m)</div>
+            <div style={sm(".72rem","rgba(0,212,200,.55)",{letterSpacing:".08em",textTransform:"uppercase",marginBottom:2})}>TIDE (m)</div>
             <TideChart key={`t${sk}${selDay}`} dayOff={selDay} spotData={sp} wtData={wtData} h={108}/>
-            <div style={sm(".36rem","rgba(0,212,200,.45)",{letterSpacing:".08em",textTransform:"uppercase",margin:"3px 0 2px"})}>WIND ({fmtWU2(prefs.windUnit).toUpperCase()}) · max {fmtWN2(MAX_S,prefs.windUnit)}</div>
+            <div style={sm(".72rem","rgba(0,212,200,.45)",{letterSpacing:".08em",textTransform:"uppercase",margin:"3px 0 2px"})}>WIND ({fmtWU2(prefs.windUnit).toUpperCase()}) · max {fmtWN2(MAX_S,prefs.windUnit)}</div>
             <WindBars key={`w${sk}${selDay}`} data={hourly} sk={sk} spotsMap={SPOTS} dayOff={selDay} h={74}/>
           </div>
           {/* Time axis */}
-          <div style={{display:"flex",justifyContent:"space-between",fontSize:".36rem",color:"rgba(127,179,200,.4)",marginBottom:6}}>
+          <div style={{display:"flex",justifyContent:"space-between",fontSize:".72rem",color:"rgba(127,179,200,.4)",marginBottom:6}}>
             {["12am","3am","6am",selDay===0?clk+"▼":"9am","12pm","3pm","6pm","9pm","12am"].map((l,i)=>(
               <span key={i} style={selDay===0&&i===3?{color:C.amber}:{}}>{l}</span>
             ))}
@@ -636,11 +636,11 @@ export default function App() {
           {/* Wind key */}
           <div style={{display:"flex",flexWrap:"wrap",gap:5,marginBottom:8}}>
             {[["#5de89e","Offshore"],["#ff6b6b","Onshore"],["#4f9cf5","Cross"],["#a78bfa","X-off"],["#f5a623","X-on"]].map(([c,l])=>(
-              <div key={l} style={{display:"flex",alignItems:"center",gap:3}}><div style={{width:6,height:6,borderRadius:"50%",background:c}}/><span style={sm(".38rem")}>{l}</span></div>
+              <div key={l} style={{display:"flex",alignItems:"center",gap:3}}><div style={{width:6,height:6,borderRadius:"50%",background:c}}/><span style={sm(".74rem")}>{l}</span></div>
             ))}
           </div>
           {/* Wind hourly */}
-          <div style={sm(".42rem",C.mist,{letterSpacing:".1em",textTransform:"uppercase",marginBottom:5})}>💨 Wind · Hourly</div>
+          <div style={sm(".60rem",C.mist,{letterSpacing:".1em",textTransform:"uppercase",marginBottom:5})}>💨 Wind · Hourly</div>
           <div style={{display:"flex",gap:5,overflowX:"auto",paddingBottom:4,marginBottom:8}}>
             {hourly.map((d,i)=>{
               const isNow=selDay===0&&Math.abs(d.h-Math.floor(NOW))<0.5;
@@ -648,17 +648,17 @@ export default function App() {
               const wlbl=windClass(d.dir,sk,SPOTS);
               return(
                 <div key={i} style={{flexShrink:0,width:48,background:isNow?"rgba(245,166,35,.07)":C.g2,border:`1px solid ${isNow?"rgba(245,166,35,.5)":C.g1}`,borderRadius:10,padding:"5px 4px",display:"flex",flexDirection:"column",alignItems:"center",gap:2}}>
-                  <span style={sm(".35rem",isNow?C.amber:C.mist)}>{fmtSh(d.h)}</span>
+                  <span style={sm(".70rem",isNow?C.amber:C.mist)}>{fmtSh(d.h)}</span>
                   <Arrow deg={d.dir} col={dc} size={17}/>
                   <span style={mn(".6rem",dc)}>{fmtWN2(d.speed,prefs.windUnit)}</span>
-                  <span style={sm(".38rem",C.pearl,{fontWeight:600,opacity:.7})}>{compass(d.dir)}</span>
-                  <span style={sm(".32rem",dc,{textTransform:"uppercase"})}>{wlbl==="offshore"?"OFF":wlbl==="onshore"?"ON":wlbl==="cross-offshore"?"X-off":wlbl==="cross-onshore"?"X-on":"X"}</span>
+                  <span style={sm(".74rem",C.pearl,{fontWeight:600,opacity:.7})}>{compass(d.dir)}</span>
+                  <span style={sm(".50rem",dc,{textTransform:"uppercase"})}>{wlbl==="offshore"?"OFF":wlbl==="onshore"?"ON":wlbl==="cross-offshore"?"X-off":wlbl==="cross-onshore"?"X-on":"X"}</span>
                 </div>
               );
             })}
           </div>
           {/* Swell hourly */}
-          <div style={sm(".42rem",C.mist,{letterSpacing:".1em",textTransform:"uppercase",marginBottom:5})}>🌊 Swell · Hourly</div>
+          <div style={sm(".60rem",C.mist,{letterSpacing:".1em",textTransform:"uppercase",marginBottom:5})}>🌊 Swell · Hourly</div>
           <div style={{display:"flex",gap:5,overflowX:"auto",paddingBottom:4,marginBottom:8}}>
             {hourly.map((d,i)=>{
               const isNow=selDay===0&&Math.abs(d.h-Math.floor(NOW))<0.5;
@@ -667,17 +667,17 @@ export default function App() {
               const sc=si>0.6?C.teal:si>0.3?C.teal2:C.mist;
               return(
                 <div key={i} style={{flexShrink:0,width:48,background:isNow?"rgba(0,212,200,.07)":C.g2,border:`1px solid ${isNow?"rgba(0,212,200,.45)":C.g1}`,borderRadius:10,padding:"5px 4px",display:"flex",flexDirection:"column",alignItems:"center",gap:2}}>
-                  <span style={sm(".35rem",isNow?C.teal:C.mist)}>{fmtSh(d.h)}</span>
+                  <span style={sm(".70rem",isNow?C.teal:C.mist)}>{fmtSh(d.h)}</span>
                   <Arrow deg={swD} col={sc} size={17}/>
                   <span style={mn(".6rem",sc)}>{fmtWN(swH,prefs.waveUnit)}{fmtWU(prefs.waveUnit)}</span>
-                  <span style={sm(".38rem",C.pearl,{fontWeight:600,opacity:.7})}>{compass(swD)}</span>
-                  <span style={sm(".32rem",C.mist)}>{swP}s</span>
+                  <span style={sm(".74rem",C.pearl,{fontWeight:600,opacity:.7})}>{compass(swD)}</span>
+                  <span style={sm(".50rem",C.mist)}>{swP}s</span>
                 </div>
               );
             })}
           </div>
           {/* 7-day */}
-          <div style={sm(".42rem",C.mist,{letterSpacing:".1em",textTransform:"uppercase",marginBottom:5})}>7-Day Forecast</div>
+          <div style={sm(".60rem",C.mist,{letterSpacing:".1em",textTransform:"uppercase",marginBottom:5})}>7-Day Forecast</div>
           <div style={{display:"flex",gap:5,overflowX:"auto",paddingBottom:4}}>
             {wave7.map((wd,i)=>{
               const wday=wind7[i]||{};
@@ -690,13 +690,13 @@ export default function App() {
               const sel=i===selDay;
               return(
                 <div key={i} onClick={()=>pickDay(i)} style={{flexShrink:0,width:54,background:sel?"rgba(0,212,200,.1)":C.g2,border:`1px solid ${sel?"rgba(0,212,200,.6)":C.g1}`,borderRadius:10,padding:"7px 5px",display:"flex",flexDirection:"column",alignItems:"center",gap:2,cursor:"pointer"}}>
-                  <span style={sm(".38rem",sel?C.teal:C.mist,{textTransform:"uppercase"})}>{i===0?"Today":dayName(wd.date)}</span>
+                  <span style={sm(".74rem",sel?C.teal:C.mist,{textTransform:"uppercase"})}>{i===0?"Today":dayName(wd.date)}</span>
                   <span style={mn(".7rem",C.teal)}>{prefs.waveUnit==="ft"?toFt(+hi2)+" ft":hi2+"m"}</span>
-                  <span style={sm(".32rem")}>▲ {prefs.waveUnit==="ft"?toFt(+lo2):lo2}m ▼</span>
+                  <span style={sm(".50rem")}>▲ {prefs.waveUnit==="ft"?toFt(+lo2):lo2}m ▼</span>
                   <div style={{height:2,width:"100%",background:"rgba(255,255,255,.06)",borderRadius:1}}><div style={{height:"100%",width:`${Math.min(100,Math.round(parseFloat(hi2)/2.5*100))}%`,background:C.teal,borderRadius:1}}/></div>
                   {wdir!=null&&<Arrow deg={wdir} col={wc3} size={13}/>}
-                  <span style={mn(".58rem",wc3)}>{wday.windMax!=null?fmtWN2(wday.windMax,prefs.windUnit):"—"}</span>
-                  <span style={sm(".32rem",wc3)}>{wdir!=null?compass(wdir):"—"}</span>
+                  <span style={mn(".76rem",wc3)}>{wday.windMax!=null?fmtWN2(wday.windMax,prefs.windUnit):"—"}</span>
+                  <span style={sm(".50rem",wc3)}>{wdir!=null?compass(wdir):"—"}</span>
                 </div>
               );
             })}
@@ -718,7 +718,7 @@ export default function App() {
       addLocation({name:form.name.trim(),lat,lng,breakType:form.breakType});
       setForm({name:"",lat:"",lng:"",breakType:"Beach"});setFormErr("");setAddOpen(false);
     };
-    const inp={width:"100%",background:C.g2,border:`1px solid ${C.g1}`,borderRadius:10,padding:"9px 12px",color:C.pearl,fontSize:".52rem",fontFamily:"'DM Mono',monospace",letterSpacing:".04em"};
+    const inp={width:"100%",background:C.g2,border:`1px solid ${C.g1}`,borderRadius:10,padding:"9px 12px",color:C.pearl,fontSize:".70rem",fontFamily:"'DM Mono',monospace",letterSpacing:".04em"};
     return(
       <div style={bg}>
         <style>{`*{box-sizing:border-box;margin:0;padding:0}::-webkit-scrollbar{display:none}input::placeholder{color:rgba(127,179,200,.4)}input:focus{outline:none;border-color:rgba(0,212,200,.5)!important}`}</style>
@@ -728,8 +728,8 @@ export default function App() {
           <div style={{paddingBottom:14,borderBottom:`1px solid ${C.g1}`,marginBottom:4}}>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
               <span style={{fontSize:".9rem"}}>📍</span>
-              <span style={sm(".5rem",C.pearl,{letterSpacing:".04em"})}>Surf Spots</span>
-              <span style={sm(".42rem",C.mist,{marginLeft:"auto"})}>{Object.keys(SPOTS).length}/3</span>
+              <span style={sm(".68rem",C.pearl,{letterSpacing:".04em"})}>Surf Spots</span>
+              <span style={sm(".60rem",C.mist,{marginLeft:"auto"})}>{Object.keys(SPOTS).length}/3</span>
             </div>
             <div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:10}}>
               {Object.entries(SPOTS).map(([id,loc])=>{
@@ -739,13 +739,13 @@ export default function App() {
                     <div style={{flex:1,minWidth:0}}>
                       <div style={{display:"flex",alignItems:"center",gap:5}}>
                         {isDef&&<span style={{fontSize:".6rem",color:C.amber}}>★</span>}
-                        <span style={sm(".52rem",C.pearl,{fontWeight:600,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"})}>{loc.name}</span>
+                        <span style={sm(".70rem",C.pearl,{fontWeight:600,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"})}>{loc.name}</span>
                       </div>
-                      <div style={sm(".4rem",C.mist,{marginTop:2})}>{loc.breakType} · {(+loc.lat).toFixed(4)}, {(+loc.lng).toFixed(4)}</div>
+                      <div style={sm(".76rem",C.mist,{marginTop:2})}>{loc.breakType} · {(+loc.lat).toFixed(4)}, {(+loc.lng).toFixed(4)}</div>
                     </div>
                     <div style={{display:"flex",gap:6,flexShrink:0}}>
-                      {!isDef&&<div onClick={()=>setDefault(id)} style={{padding:"4px 8px",borderRadius:8,background:"rgba(245,166,35,.1)",border:"1px solid rgba(245,166,35,.3)",color:C.amber,fontSize:".4rem",cursor:"pointer",letterSpacing:".06em"}}>SET DEFAULT</div>}
-                      {isDef&&<div style={{padding:"4px 8px",borderRadius:8,background:"rgba(245,166,35,.15)",border:"1px solid rgba(245,166,35,.4)",color:C.amber,fontSize:".4rem",letterSpacing:".06em"}}>★ DEFAULT</div>}
+                      {!isDef&&<div onClick={()=>setDefault(id)} style={{padding:"4px 8px",borderRadius:8,background:"rgba(245,166,35,.1)",border:"1px solid rgba(245,166,35,.3)",color:C.amber,fontSize:".76rem",cursor:"pointer",letterSpacing:".06em"}}>SET DEFAULT</div>}
+                      {isDef&&<div style={{padding:"4px 8px",borderRadius:8,background:"rgba(245,166,35,.15)",border:"1px solid rgba(245,166,35,.4)",color:C.amber,fontSize:".76rem",letterSpacing:".06em"}}>★ DEFAULT</div>}
                       <div onClick={()=>removeLocation(id)} style={{width:26,height:26,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(255,107,107,.1)",border:"1px solid rgba(255,107,107,.25)",color:C.coral,fontSize:".8rem",cursor:"pointer",lineHeight:1}}>×</div>
                     </div>
                   </div>
@@ -753,13 +753,13 @@ export default function App() {
               })}
             </div>
             {Object.keys(SPOTS).length<3&&!addOpen&&(
-              <div onClick={()=>setAddOpen(true)} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6,padding:"10px",borderRadius:12,border:`1px dashed rgba(0,212,200,.3)`,color:C.teal,fontSize:".5rem",cursor:"pointer",letterSpacing:".06em"}}>
+              <div onClick={()=>setAddOpen(true)} style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6,padding:"10px",borderRadius:12,border:`1px dashed rgba(0,212,200,.3)`,color:C.teal,fontSize:".68rem",cursor:"pointer",letterSpacing:".06em"}}>
                 <span style={{fontSize:".9rem"}}>+</span> Add Surf Spot
               </div>
             )}
             {addOpen&&(
               <div style={{background:C.g2,border:`1px solid rgba(0,212,200,.2)`,borderRadius:14,padding:"14px"}}>
-                <div style={sm(".46rem",C.teal,{letterSpacing:".1em",textTransform:"uppercase",marginBottom:10})}>New Surf Spot</div>
+                <div style={sm(".64rem",C.teal,{letterSpacing:".1em",textTransform:"uppercase",marginBottom:10})}>New Surf Spot</div>
                 <div style={{display:"flex",flexDirection:"column",gap:8}}>
                   <input value={form.name} placeholder="Spot name (e.g. Jeffreys Bay)" onChange={e=>setForm(f=>({...f,name:e.target.value}))} style={inp}/>
                   <div style={{display:"flex",gap:8}}>
@@ -768,13 +768,13 @@ export default function App() {
                   </div>
                   <div style={{display:"flex",gap:6}}>
                     {["Beach","Reef","Point"].map(bt=>(
-                      <div key={bt} onClick={()=>setForm(f=>({...f,breakType:bt}))} style={{flex:1,textAlign:"center",padding:"7px 4px",borderRadius:9,cursor:"pointer",background:form.breakType===bt?"rgba(0,212,200,.15)":C.g2,border:`1px solid ${form.breakType===bt?"rgba(0,212,200,.5)":C.g1}`,color:form.breakType===bt?C.teal:C.mist,fontSize:".48rem"}}>{bt} break</div>
+                      <div key={bt} onClick={()=>setForm(f=>({...f,breakType:bt}))} style={{flex:1,textAlign:"center",padding:"7px 4px",borderRadius:9,cursor:"pointer",background:form.breakType===bt?"rgba(0,212,200,.15)":C.g2,border:`1px solid ${form.breakType===bt?"rgba(0,212,200,.5)":C.g1}`,color:form.breakType===bt?C.teal:C.mist,fontSize:".66rem"}}>{bt} break</div>
                     ))}
                   </div>
-                  {formErr&&<div style={sm(".44rem",C.coral)}>{formErr}</div>}
+                  {formErr&&<div style={sm(".62rem",C.coral)}>{formErr}</div>}
                   <div style={{display:"flex",gap:8,marginTop:2}}>
-                    <div onClick={handleAdd} style={{flex:2,textAlign:"center",padding:"10px",borderRadius:10,background:"rgba(0,212,200,.15)",border:"1px solid rgba(0,212,200,.4)",color:C.teal,fontSize:".5rem",cursor:"pointer",fontWeight:600}}>Save Spot</div>
-                    <div onClick={()=>{setAddOpen(false);setFormErr("");}} style={{flex:1,textAlign:"center",padding:"10px",borderRadius:10,background:C.g2,border:`1px solid ${C.g1}`,color:C.mist,fontSize:".5rem",cursor:"pointer"}}>Cancel</div>
+                    <div onClick={handleAdd} style={{flex:2,textAlign:"center",padding:"10px",borderRadius:10,background:"rgba(0,212,200,.15)",border:"1px solid rgba(0,212,200,.4)",color:C.teal,fontSize:".68rem",cursor:"pointer",fontWeight:600}}>Save Spot</div>
+                    <div onClick={()=>{setAddOpen(false);setFormErr("");}} style={{flex:1,textAlign:"center",padding:"10px",borderRadius:10,background:C.g2,border:`1px solid ${C.g1}`,color:C.mist,fontSize:".68rem",cursor:"pointer"}}>Cancel</div>
                   </div>
                 </div>
               </div>
@@ -787,11 +787,11 @@ export default function App() {
           <ToggleRow label="Time Format" icon="🕐" options={[["12h","12-hour"],["24h","24-hour"]]} current={prefs.timeFormat} onChange={v=>updatePref("timeFormat",v)}/>
           {/* Preview */}
           <div style={{margin:"16px 0",background:"rgba(0,212,200,.04)",border:"1px solid rgba(0,212,200,.18)",borderRadius:14,padding:"14px"}}>
-            <div style={sm(".42rem",C.teal,{letterSpacing:".1em",textTransform:"uppercase",marginBottom:10})}>Live Preview</div>
+            <div style={sm(".60rem",C.teal,{letterSpacing:".1em",textTransform:"uppercase",marginBottom:10})}>Live Preview</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
               {[["Wave height",fmtWv(1.2,prefs.waveUnit)],["Swell height",fmtWv(0.8,prefs.waveUnit)],["Wind speed",fmtWind(18,prefs.windUnit)],["Wind gust",fmtWind(28,prefs.windUnit)],["Water temp",fmtTemp(16.8,prefs.tempUnit)],["Time now",clk]].map(([l,v])=>(
                 <div key={l} style={{background:C.g2,borderRadius:10,padding:"8px 10px"}}>
-                  <div style={sm(".38rem",C.mist,{marginBottom:3,textTransform:"uppercase",letterSpacing:".08em"})}>{l}</div>
+                  <div style={sm(".74rem",C.mist,{marginBottom:3,textTransform:"uppercase",letterSpacing:".08em"})}>{l}</div>
                   <div style={mn(".85rem",C.teal)}>{v}</div>
                 </div>
               ))}
@@ -799,12 +799,12 @@ export default function App() {
           </div>
           <div style={{display:"flex",alignItems:"center",gap:6,paddingBottom:16,borderBottom:`1px solid ${C.g1}`}}>
             <div style={{width:5,height:5,borderRadius:"50%",background:C.teal,boxShadow:`0 0 5px ${C.teal}`}}/>
-            <span style={sm(".42rem",C.mist)}>Settings saved automatically to this device</span>
+            <span style={sm(".60rem",C.mist)}>Settings saved automatically to this device</span>
           </div>
           {/* About link */}
           <div onClick={()=>setScreen("about")} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 0",cursor:"pointer",borderBottom:`1px solid ${C.g1}`}}>
-            <div style={{display:"flex",alignItems:"center",gap:8}}><span style={{fontSize:"1rem"}}>ℹ️</span><span style={sm(".5rem",C.pearl)}>About SwellTrack</span></div>
-            <span style={sm(".5rem",C.mist)}>›</span>
+            <div style={{display:"flex",alignItems:"center",gap:8}}><span style={{fontSize:"1rem"}}>ℹ️</span><span style={sm(".68rem",C.pearl)}>About SwellTrack</span></div>
+            <span style={sm(".68rem",C.mist)}>›</span>
           </div>
         </div>
         <div style={{height:40}}/>
@@ -819,8 +819,8 @@ export default function App() {
       {nav}
       <div style={{padding:"24px 16px 0",display:"flex",flexDirection:"column",alignItems:"center",textAlign:"center",gap:6}}>
         <div style={{fontFamily:"'Syne',sans-serif",fontSize:"2rem",fontWeight:800,color:C.pearl,letterSpacing:"-.04em",marginBottom:4}}>Swell<span style={{color:C.teal}}>Track</span></div>
-        <div style={sm(".46rem",C.teal,{letterSpacing:".18em",textTransform:"uppercase"})}>Version {VERSION}</div>
-        <div style={sm(".46rem",C.mist,{letterSpacing:".1em",textTransform:"uppercase",marginTop:2})}>Surf Coast Victoria</div>
+        <div style={sm(".64rem",C.teal,{letterSpacing:".18em",textTransform:"uppercase"})}>Version {VERSION}</div>
+        <div style={sm(".64rem",C.mist,{letterSpacing:".1em",textTransform:"uppercase",marginTop:2})}>Surf Coast Victoria</div>
       </div>
       <div style={{padding:"24px 16px 0",display:"flex",flexDirection:"column",gap:10}}>
         {[
@@ -832,12 +832,12 @@ export default function App() {
           <div key={title} style={{background:C.g2,border:`1px solid ${C.g1}`,borderRadius:14,padding:"14px 16px"}}>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
               <span style={{fontSize:".9rem"}}>{icon}</span>
-              <span style={sm(".5rem",C.pearl,{fontWeight:600,letterSpacing:".04em"})}>{title}</span>
+              <span style={sm(".68rem",C.pearl,{fontWeight:600,letterSpacing:".04em"})}>{title}</span>
             </div>
-            <div style={sm(".46rem",C.mist,{lineHeight:1.7})}>{body}</div>
+            <div style={sm(".64rem",C.mist,{lineHeight:1.7})}>{body}</div>
           </div>
         ))}
-        <div style={{...sm(".42rem",C.mist,{textAlign:"center",lineHeight:1.7}),padding:"8px 0 16px"}}>
+        <div style={{...sm(".60rem",C.mist,{textAlign:"center",lineHeight:1.7}),padding:"8px 0 16px"}}>
           Open-Meteo is open source and free for non-commercial use.<br />
           <span style={{color:C.teal}}>open-meteo.com</span>
         </div>
