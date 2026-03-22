@@ -5,10 +5,10 @@ const VERSION = "1.0.0-beta";
 
 // ── colours ───────────────────────────────────────────────────────────────────
 const C = {
-  bg:"#020d1a", panel:"#041828", pearl:"#e8f4f8", mist:"#7fb3c8",
-  teal:"#00d4c8", teal2:"#00a89e", amber:"#f5a623", coral:"#ff6b6b",
-  blue:"#4f9cf5", green:"#5de89e", purple:"#a78bfa",
-  g1:"rgba(232,244,248,0.08)", g2:"rgba(232,244,248,0.04)",
+  bg:"#f0f4f8", panel:"#ffffff", pearl:"#0d1f2d", mist:"#5a7a8a",
+  teal:"#008a82", teal2:"#006d67", amber:"#c07a00", coral:"#c0392b",
+  blue:"#2563a8", green:"#1a8a5a", purple:"#6b4fa0",
+  g1:"rgba(0,0,0,0.08)", g2:"rgba(0,0,0,0.03)",
 };
 
 // ── default spots ─────────────────────────────────────────────────────────────
@@ -170,7 +170,7 @@ const mkDataset=sk=>{
   const wind7=Array.from({length:7},(_,i)=>{const dt=new Date(today);dt.setDate(dt.getDate()+i);const d2=(wd+(rng()*40-20)+360)%360;return{date:dt.toISOString().slice(0,10),windMax:Math.round(ws*(0.65+rng()*0.7)),windDir:d2};});
   const hourly7=wind7.map(w=>mkHourly(w.windMax||ws,w.windDir||wd,v(m.swellH),m.waveDir+(rng()*15-7),m.swellPeriod));
   return{
-    cond:{waveH:v(m.waveH),swellHeight:+v(m.swellH).toFixed(1),period:Math.round(v(m.period)),waveDir:m.waveDir+(rng()*20-10),windSpeed:ws,windDir:wd,sst:+(m.sst+(rng()*0.4-0.2)).toFixed(1),swellPeriod:Math.round(v(m.swellPeriod))},
+    cond:{waveH:v(m.waveH),swellHeight:+v(m.swellH).toFixed(1),period:Math.round(v(m.period)),waveDir:m.waveDir+(rng()*20-10),windSpeed:ws,windDir:wd,sst:+(m.sst+(rng()*0.4-0.2)).toFixed(1),swellPeriod:Math.round(v(m.swellPeriod)),airTemp:+(18+rng()*8).toFixed(1)},
     wave7,wind7,hourly7,live:false,
   };
 };
@@ -182,7 +182,7 @@ const fetchLive=async(lat,lng)=>{
   try{
     const [mr,wr]=await Promise.all([
       fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lng}&hourly=wave_height,wave_period,wave_direction,swell_wave_height,swell_wave_period,sea_surface_temperature&daily=wave_height_max,wind_wave_direction_dominant,swell_wave_period_max&timezone=auto&forecast_days=7`,{signal:ctrl.signal}),
-      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=wind_speed_10m,wind_direction_10m&daily=wind_speed_10m_max,wind_direction_10m_dominant,wind_gusts_10m_max&timezone=auto&forecast_days=7`,{signal:ctrl.signal}),
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=wind_speed_10m,wind_direction_10m,temperature_2m&daily=wind_speed_10m_max,wind_direction_10m_dominant,wind_gusts_10m_max&timezone=auto&forecast_days=7`,{signal:ctrl.signal}),
     ]);
     clearTimeout(timer);
     if(!mr.ok||!wr.ok) throw new Error("bad response");
@@ -200,7 +200,7 @@ const fetchLive=async(lat,lng)=>{
     const wave7=(m.daily?.time||[]).map((dt,i)=>({date:dt,waveMax:m.daily.wave_height_max?.[i]??null}));
     const wind7=(w.daily?.time||[]).map((dt,i)=>({date:dt,windMax:w.daily.wind_speed_10m_max?.[i]??null,windDir:w.daily.wind_direction_10m_dominant?.[i]??null}));
     return{
-      cond:{waveH:m.hourly.wave_height?.[idx]??null,swellHeight:m.hourly.swell_wave_height?.[idx]??null,period:m.hourly.wave_period?.[idx]??null,waveDir:m.hourly.wave_direction?.[idx]??null,windSpeed:w.hourly.wind_speed_10m?.[idx]??null,windDir:w.hourly.wind_direction_10m?.[idx]??null,sst:m.hourly.sea_surface_temperature?.[idx]??null,swellPeriod:m.hourly.swell_wave_period?.[idx]??null},
+      cond:{waveH:m.hourly.wave_height?.[idx]??null,swellHeight:m.hourly.swell_wave_height?.[idx]??null,period:m.hourly.wave_period?.[idx]??null,waveDir:m.hourly.wave_direction?.[idx]??null,windSpeed:w.hourly.wind_speed_10m?.[idx]??null,windDir:w.hourly.wind_direction_10m?.[idx]??null,sst:m.hourly.sea_surface_temperature?.[idx]??null,swellPeriod:m.hourly.swell_wave_period?.[idx]??null,airTemp:w.hourly.temperature_2m?.[idx]??null},
       wave7,wind7,hourly7,live:true,
     };
   }catch(e){clearTimeout(timer);throw e;}
@@ -217,30 +217,55 @@ const Arrow=({deg,col,size=18})=>{
   return <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{display:"block",flexShrink:0}}><line x1={fx} y1={fy} x2={tx} y2={ty} stroke={col} strokeWidth="1.8" strokeLinecap="round"/><polygon points={`${tx},${ty} ${lx},${ly} ${rx},${ry}`} fill={col}/></svg>;
 };
 
-// ── Compass ring ─────────────────────────────────────────────────────────────
-const CompassPanel=({deg,col,label,rows,size=44})=>(
-  <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:3,background:`${col}0c`,border:`1px solid ${col}2a`,borderRadius:14,padding:"10px 8px"}}>
-    <div style={{position:"relative",width:size,height:size}}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{position:"absolute",inset:0}}>
-        <circle cx={size/2} cy={size/2} r={size/2-2} fill="none" stroke={`${col}28`} strokeWidth="1"/>
-        {["N","E","S","W"].map((lb,i)=>{const a=i*90*Math.PI/180,tx=size/2+(size/2-6)*Math.sin(a),ty=size/2-(size/2-6)*Math.cos(a);return <text key={lb} x={tx} y={ty} textAnchor="middle" dominantBaseline="middle" fill="rgba(127,179,200,.42)" fontSize="5" fontFamily="monospace">{lb}</text>;})}
-      </svg>
-      <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
-        <Arrow deg={deg} col={col} size={size-16}/>
+// ── Compass ring with degree ticks ───────────────────────────────────────────
+const CompassPanel=({deg,col,label,rows,size=72})=>{
+  const cx=size/2,cy=size/2;
+  const outerR=size/2-1,innerR=outerR-3,labelR=outerR-9,arrowR=innerR-4;
+  const ticks=Array.from({length:36},(_,i)=>{
+    const ad=i*10,rad=(ad-90)*Math.PI/180,isMajor=ad%30===0;
+    const to=outerR,ti=isMajor?outerR-5:outerR-3;
+    return{ad,rad,isMajor,x1:cx+to*Math.cos(rad),y1:cy+to*Math.sin(rad),x2:cx+ti*Math.cos(rad),y2:cy+ti*Math.sin(rad)};
+  });
+  const degLabels=[{d:0,l:"N"},{d:30,l:"30"},{d:60,l:"60"},{d:90,l:"E"},{d:120,l:"120"},{d:150,l:"150"},{d:180,l:"S"},{d:210,l:"210"},{d:240,l:"240"},{d:270,l:"W"},{d:300,l:"300"},{d:330,l:"330"}];
+  return(
+    <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:4,background:`${col}0c`,border:`1px solid ${col}2a`,borderRadius:14,padding:"10px 8px"}}>
+      <div style={{position:"relative",width:size,height:size}}>
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{position:"absolute",inset:0}}>
+          <circle cx={cx} cy={cy} r={outerR} fill="rgba(0,0,0,0.25)" stroke={`${col}20`} strokeWidth="0.5"/>
+          {ticks.map(t=>(
+            <line key={t.ad} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+              stroke={t.isMajor?`${col}70`:`${col}35`} strokeWidth={t.isMajor?"1":"0.6"}/>
+          ))}
+          {degLabels.map(({d,l})=>{
+            const r2=(d-90)*Math.PI/180,lx=cx+labelR*Math.cos(r2),ly=cy+labelR*Math.sin(r2);
+            const isCard=["N","E","S","W"].includes(l);
+            return <text key={d} x={lx} y={ly} textAnchor="middle" dominantBaseline="middle"
+              fill={isCard?`${col}cc`:"rgba(127,179,200,.45)"}
+              fontSize={isCard?"5.5":"4"} fontFamily="monospace"
+              fontWeight={isCard?"bold":"normal"}>{l}</text>;
+          })}
+          <circle cx={cx} cy={cy} r={arrowR+2} fill="none" stroke={`${col}15`} strokeWidth="0.5"/>
+        </svg>
+        <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
+          <Arrow deg={deg} col={col} size={arrowR*2}/>
+        </div>
+      </div>
+      <div style={{display:"flex",alignItems:"baseline",gap:4}}>
+        <span style={{fontFamily:"'Syne',sans-serif",fontSize:".76rem",fontWeight:700,color:col}}>{compass(deg)}</span>
+        <span style={{fontSize:".58rem",color:`${col}99`}}>{Math.round(deg)}°</span>
+      </div>
+      <div style={{fontSize:".62rem",color:C.mist,letterSpacing:".06em",textTransform:"uppercase"}}>{label}</div>
+      <div style={{display:"flex",flexDirection:"column",gap:3,width:"100%",marginTop:2}}>
+        {rows.map(([k,v,vc])=>(
+          <div key={k} style={{display:"flex",justifyContent:"space-between",background:`${col}10`,borderRadius:7,padding:"3px 6px"}}>
+            <span style={{fontSize:".62rem",color:C.mist}}>{k}</span>
+            <span style={{fontFamily:"'Syne',sans-serif",fontSize:".70rem",fontWeight:700,color:vc||col}}>{v}</span>
+          </div>
+        ))}
       </div>
     </div>
-    <div style={{fontFamily:"'Syne',sans-serif",fontSize:".72rem",fontWeight:800,color:col,letterSpacing:"-.02em"}}>{compass(deg)}</div>
-    <div style={{fontSize:".70rem",color:C.mist,letterSpacing:".06em",textTransform:"uppercase"}}>{label}</div>
-    <div style={{display:"flex",flexDirection:"column",gap:3,width:"100%",marginTop:2}}>
-      {rows.map(([k,v,vc])=>(
-        <div key={k} style={{display:"flex",justifyContent:"space-between",background:`${col}10`,borderRadius:7,padding:"3px 6px"}}>
-          <span style={{fontSize:".70rem",color:C.mist}}>{k}</span>
-          <span style={{fontFamily:"'Syne',sans-serif",fontSize:".76rem",fontWeight:800,color:vc||col}}>{v}</span>
-        </div>
-      ))}
-    </div>
-  </div>
-);
+  );
+};
 
 // ── TideChart canvas ──────────────────────────────────────────────────────────
 const TideChart=({dayOff,spotData,wtData,h=110})=>{
@@ -330,9 +355,9 @@ const WindBars=({data,sk,spotsMap,dayOff=0,h=76})=>{
 
 // ── Loading screen ────────────────────────────────────────────────────────────
 const LoadingScreen=({spotName,status})=>(
-  <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:`linear-gradient(165deg,#041828,#020d1a)`,gap:16,fontFamily:"'DM Mono',monospace"}}>
+  <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:`linear-gradient(165deg,#ffffff,#e8f2f8)`,gap:16,fontFamily:"'DM Mono',monospace"}}>
     <style>{`@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}`}</style>
-    <div style={{width:48,height:48,border:`3px solid ${C.g1}`,borderTop:`3px solid ${C.teal}`,borderRadius:"50%",animation:"spin 1s linear infinite"}}/>
+    <div style={{width:48,height:48,border:`3px solid rgba(0,0,0,0.1)`,borderTop:`3px solid ${C.teal}`,borderRadius:"50%",animation:"spin 1s linear infinite"}}/>
     <div style={{fontFamily:"'Syne',sans-serif",fontSize:"1rem",fontWeight:800,color:C.pearl}}>{spotName}</div>
     <div style={{fontSize:".72rem",color:C.teal,letterSpacing:".18em",textTransform:"uppercase",animation:"pulse 2s ease-in-out infinite"}}>{status}</div>
   </div>
@@ -340,7 +365,7 @@ const LoadingScreen=({spotName,status})=>(
 
 // ── Error / offline banner ────────────────────────────────────────────────────
 const OfflineBanner=({onRetry})=>(
-  <div style={{margin:"0 14px 10px",background:"rgba(255,107,107,.07)",border:`1px solid rgba(255,107,107,.25)`,borderRadius:12,padding:"10px 14px",display:"flex",alignItems:"center",gap:10}}>
+  <div style={{margin:"0 14px 10px",background:"rgba(192,57,43,.07)",border:`1px solid rgba(192,57,43,.25)`,borderRadius:12,padding:"10px 14px",display:"flex",alignItems:"center",gap:10}}>
     <span style={{fontSize:"1rem"}}>⚠️</span>
     <div style={{flex:1}}>
       <div style={{fontSize:".66rem",color:C.coral,fontWeight:600,letterSpacing:".04em"}}>Live data unavailable</div>
@@ -352,7 +377,7 @@ const OfflineBanner=({onRetry})=>(
 
 // ── Top Nav ───────────────────────────────────────────────────────────────────
 const TopNav=({sk,spots,defaultLoc,prefs,onSpot,onSettings,screen,onBack})=>(
-  <div style={{position:"sticky",top:0,zIndex:100,background:"rgba(4,24,40,.97)",backdropFilter:"blur(12px)",borderBottom:`1px solid ${C.g1}`}}>
+  <div style={{position:"sticky",top:0,zIndex:100,background:"rgba(255,255,255,.97)",backdropFilter:"blur(12px)",borderBottom:`1px solid ${C.g1}`}}>
     <div style={{display:"flex",alignItems:"center",padding:"10px 14px 0",gap:10}}>
       {/* Logo / back */}
       {screen==="conditions"
@@ -500,7 +525,7 @@ export default function App() {
   const curW  = hourly[Math.min(Math.floor(NOW),hourly.length-1)]||{speed:0,dir:0,swellH:0,swellDir:225,swellPer:0};
   const sp    = SPOTS[sk];
 
-  const bg   = {background:`linear-gradient(165deg,#041828 0%,#020d1a 65%)`,minHeight:"100vh",fontFamily:"'DM Mono',monospace",color:C.pearl};
+  const bg   = {background:`linear-gradient(165deg,#ffffff 0%,#e8f2f8 65%)`,minHeight:"100vh",fontFamily:"'DM Mono',monospace",color:C.pearl};
   const mn   = (sz,col=C.pearl,ex={})=>({fontFamily:"'Syne',sans-serif",fontSize:sz,fontWeight:700,color:col,lineHeight:1,...ex});
   const sm   = (sz,col=C.mist,ex={})=>({fontSize:sz,color:col,...ex});
   const pill = (ex={})=>({background:C.g2,border:`1px solid ${C.g1}`,borderRadius:14,padding:12,...ex});
@@ -509,7 +534,7 @@ export default function App() {
   // ── CONDITIONS ─────────────────────────────────────────────────────────────
   if(screen==="conditions") return(
     <div style={bg}>
-      <style>{`*{box-sizing:border-box;margin:0;padding:0}::-webkit-scrollbar{display:none}input::placeholder{color:rgba(127,179,200,.4)}input:focus{outline:none;border-color:rgba(0,212,200,.5)!important}body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}`}</style>
+      <style>{`*{box-sizing:border-box;margin:0;padding:0}::-webkit-scrollbar{display:none}input::placeholder{color:rgba(127,179,200,.4)}input:focus{outline:none;border-color:rgba(0,212,200,.5)!important}body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;background:#f0f4f8;}`}</style>
       {nav}
       <div style={{padding:"12px 16px 0"}}>
         {/* Status banner */}
@@ -528,12 +553,12 @@ export default function App() {
         {/* Wave animation */}
         <div style={{height:24,overflow:"hidden",opacity:.32,margin:"0 -16px 10px"}}>
           <svg width="100%" height="24" viewBox="0 0 400 24" preserveAspectRatio="none">
-            <path d="M0,14 C30,6 50,20 80,10 C110,0 130,17 160,7 C190,-3 210,15 240,5 C270,-5 295,13 320,3 C350,-7 375,11 400,3 L400,24 L0,24Z" fill="rgba(0,212,200,0.1)" stroke="rgba(0,212,200,0.3)" strokeWidth="1.5"/>
+            <path d="M0,14 C30,6 50,20 80,10 C110,0 130,17 160,7 C190,-3 210,15 240,5 C270,-5 295,13 320,3 C350,-7 375,11 400,3 L400,24 L0,24Z" fill="rgba(0,138,130,0.08)" stroke="rgba(0,138,130,0.25)" strokeWidth="1.5"/>
           </svg>
         </div>
         {/* Cards */}
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-          <div onClick={()=>setScreen("tidewind")} style={pill({gridColumn:"1/-1",display:"flex",alignItems:"center",cursor:"pointer",border:`1px solid rgba(0,212,200,.22)`,background:"rgba(0,212,200,.04)"})}>
+          <div onClick={()=>setScreen("tidewind")} style={pill({gridColumn:"1/-1",display:"flex",alignItems:"center",cursor:"pointer",border:`1px solid rgba(0,138,130,.22)`,background:"rgba(0,138,130,.05)"})}>
             <div style={{flex:1}}>
               <div style={sm(".62rem",C.mist,{letterSpacing:".1em",textTransform:"uppercase",marginBottom:4})}>🌊 Tides &amp; 💨 Wind</div>
               <div style={{display:"flex",alignItems:"baseline",gap:7,marginBottom:3}}><span style={mn("1.1rem")}>{curT.toFixed(2)}m</span><span style={sm(".64rem")}>{rising?"↑ Rising":"↓ Falling"}</span></div>
@@ -544,9 +569,21 @@ export default function App() {
           </div>
           <div style={pill()}>
             <div style={{fontSize:".9rem",marginBottom:4}}>🌡️</div>
-            <div style={sm(".62rem",C.mist,{letterSpacing:".1em",textTransform:"uppercase",marginBottom:2})}>Water Temp</div>
-            <div style={mn("1.1rem")}>{fmtTemp(cond.sst,prefs.tempUnit)}</div>
-            <div style={sm(".62rem",C.mist,{marginTop:2})}>{cond.sst!=null?wetsuit(cond.sst):"—"}</div>
+            <div style={sm(".62rem",C.mist,{letterSpacing:".1em",textTransform:"uppercase",marginBottom:6})}>Temperature</div>
+            <div style={{display:"flex",flexDirection:"column",gap:6}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <span style={sm(".60rem")}>💧 Water</span>
+                <div style={{textAlign:"right"}}>
+                  <div style={mn("1.1rem")}>{fmtTemp(cond.sst,prefs.tempUnit)}</div>
+                  <div style={sm(".58rem",C.mist,{marginTop:1})}>{cond.sst!=null?wetsuit(cond.sst):"—"}</div>
+                </div>
+              </div>
+              <div style={{height:1,background:"rgba(255,255,255,.06)"}}/>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <span style={sm(".60rem")}>🌤 Air</span>
+                <div style={mn("1.1rem")}>{fmtTemp(cond.airTemp,prefs.tempUnit)}</div>
+              </div>
+            </div>
           </div>
           <div style={pill()}>
             <div style={{fontSize:".9rem",marginBottom:4}}>🔄</div>
@@ -594,7 +631,7 @@ export default function App() {
             </div>
           </div>
           {/* Wave + swell strip */}
-          <div style={{display:"flex",gap:0,background:C.g2,border:`1px solid ${C.g1}`,borderRadius:12,overflow:"hidden",marginBottom:8}}>
+          <div style={{display:"flex",gap:0,background:"rgba(0,0,0,0.03)",border:`1px solid ${C.g1}`,borderRadius:12,overflow:"hidden",marginBottom:8}}>
             <div style={{flex:1,padding:"8px 12px",borderRight:`1px solid ${C.g1}`}}>
               <div style={sm(".70rem",C.mist,{letterSpacing:".1em",textTransform:"uppercase",marginBottom:2})}>🌊 Wave height</div>
               <div style={{display:"flex",alignItems:"baseline",gap:4}}><span style={mn("1.05rem")}>{fmtWN(cond.waveH||0,prefs.waveUnit)}</span><span style={sm(".62rem")}>{fmtWU(prefs.waveUnit)}</span></div>
@@ -609,13 +646,37 @@ export default function App() {
           {/* Tide pills */}
           <div style={{display:"flex",gap:5,marginBottom:8}}>
             {nextTd.map((t,i)=>(
-              <div key={i} style={{flex:1,background:t.type==="high"?"rgba(0,212,200,.06)":"rgba(79,156,245,.05)",border:`1px solid ${t.type==="high"?"rgba(0,212,200,.25)":"rgba(79,156,245,.2)"}`,borderRadius:10,padding:"5px 7px"}}>
+              <div key={i} style={{flex:1,background:t.type==="high"?"rgba(0,212,200,.06)":"rgba(79,156,245,.05)",border:`1px solid ${t.type==="high"?"rgba(0,138,130,.25)":"rgba(37,99,168,.2)"}`,borderRadius:10,padding:"5px 7px"}}>
                 <div style={sm(".72rem",t.type==="high"?C.teal:C.blue,{textTransform:"uppercase",marginBottom:1})}>{t.type==="high"?"▲ High":"▼ Low"}</div>
                 <div style={mn(".72rem")}>{fmtH(t.h)}</div>
                 <div style={sm(".74rem")}>{t.ht.toFixed(2)}m</div>
               </div>
             ))}
           </div>
+          {/* Sun times row — today only */}
+          {selDay===0&&(()=>{
+            const sun=sp?sunAt(sp.lat,sp.lng):{fl:6.2,sr:7.1,ss:19.8,ll:20.7};
+            const events=[{h:sun.fl,icon:"🌅",label:"First Light"},{h:sun.sr,icon:"☀️",label:"Sunrise"},{h:sun.ss,icon:"🌇",label:"Sunset"},{h:sun.ll,icon:"🌆",label:"Last Light"}];
+            const nextIdx=events.findIndex(e=>e.h>NOW);
+            return(
+              <div style={{display:"flex",justifyContent:"space-between",background:C.g2,border:`1px solid ${C.g1}`,borderRadius:10,padding:"8px 12px",marginBottom:8}}>
+                {events.map((e,i)=>{
+                  const hh=Math.floor(e.h)%24,mm=Math.round((e.h%1)*60),p=hh<12?"am":"pm",dh=hh===0?12:hh>12?hh-12:hh;
+                  const timeStr=`${dh}:${String(mm).padStart(2,"0")}${p}`;
+                  const isPast=e.h<NOW,isNext=i===nextIdx;
+                  return(
+                    <div key={e.label} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:2,opacity:isPast?0.38:1}}>
+                      <span style={{fontSize:isNext?".95rem":".75rem"}}>{e.icon}</span>
+                      <span style={{fontFamily:"'Syne',sans-serif",fontSize:".62rem",fontWeight:700,color:isNext?C.amber:C.pearl}}>{timeStr}</span>
+                      <span style={sm(".52rem",isNext?C.amber:C.mist)}>{e.label}</span>
+                      {isNext&&<div style={{width:4,height:4,borderRadius:"50%",background:C.amber,boxShadow:`0 0 4px ${C.amber}`,marginTop:1}}/>}
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })()}
+
           {/* Charts */}
           <div style={{marginBottom:2}}>
             <div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}>
@@ -721,7 +782,7 @@ export default function App() {
     const inp={width:"100%",background:C.g2,border:`1px solid ${C.g1}`,borderRadius:10,padding:"9px 12px",color:C.pearl,fontSize:".70rem",fontFamily:"'DM Mono',monospace",letterSpacing:".04em"};
     return(
       <div style={bg}>
-        <style>{`*{box-sizing:border-box;margin:0;padding:0}::-webkit-scrollbar{display:none}input::placeholder{color:rgba(127,179,200,.4)}input:focus{outline:none;border-color:rgba(0,212,200,.5)!important}body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}`}</style>
+        <style>{`*{box-sizing:border-box;margin:0;padding:0}::-webkit-scrollbar{display:none}input::placeholder{color:rgba(127,179,200,.4)}input:focus{outline:none;border-color:rgba(0,212,200,.5)!important}body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;background:#f0f4f8;}`}</style>
         {nav}
         <div style={{padding:"12px 16px 0"}}>
           {/* Locations */}
@@ -789,7 +850,7 @@ export default function App() {
           <div style={{margin:"16px 0",background:"rgba(0,212,200,.04)",border:"1px solid rgba(0,212,200,.18)",borderRadius:14,padding:"14px"}}>
             <div style={sm(".60rem",C.teal,{letterSpacing:".1em",textTransform:"uppercase",marginBottom:10})}>Live Preview</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-              {[["Wave height",fmtWv(1.2,prefs.waveUnit)],["Swell height",fmtWv(0.8,prefs.waveUnit)],["Wind speed",fmtWind(18,prefs.windUnit)],["Wind gust",fmtWind(28,prefs.windUnit)],["Water temp",fmtTemp(16.8,prefs.tempUnit)],["Time now",clk]].map(([l,v])=>(
+              {[["Wave height",fmtWv(1.2,prefs.waveUnit)],["Swell height",fmtWv(0.8,prefs.waveUnit)],["Wind speed",fmtWind(18,prefs.windUnit)],["Wind gust",fmtWind(28,prefs.windUnit)],["Water temp",fmtTemp(16.8,prefs.tempUnit)],["Air temp",fmtTemp(22.4,prefs.tempUnit)],["Time now",clk]].map(([l,v])=>(
                 <div key={l} style={{background:C.g2,borderRadius:10,padding:"8px 10px"}}>
                   <div style={sm(".74rem",C.mist,{marginBottom:3,textTransform:"uppercase",letterSpacing:".08em"})}>{l}</div>
                   <div style={mn(".85rem",C.teal)}>{v}</div>
@@ -839,7 +900,7 @@ export default function App() {
         ))}
         <div style={{...sm(".60rem",C.mist,{textAlign:"center",lineHeight:1.7}),padding:"8px 0 16px"}}>
           Open-Meteo is open source and free for non-commercial use.<br />
-          <span style={{color:C.teal}}>open-meteo.com</span>
+          <span style={{color:C.teal,textDecoration:"underline"}}>open-meteo.com</span>
         </div>
       </div>
       <div style={{height:40}}/>
