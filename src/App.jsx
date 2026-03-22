@@ -501,7 +501,7 @@ export default function App() {
   const sp    = SPOTS[sk];
 
   const bg   = {background:`linear-gradient(165deg,#041828 0%,#020d1a 65%)`,minHeight:"100vh",fontFamily:"'DM Mono',monospace",color:C.pearl};
-  const mn   = (sz,col=C.pearl,ex={})=>({fontFamily:"'Syne',sans-serif",fontSize:sz,fontWeight:800,color:col,letterSpacing:"-.03em",lineHeight:1,...ex});
+  const mn   = (sz,col=C.pearl,ex={})=>({fontFamily:"'Syne',sans-serif",fontSize:sz,fontWeight:800,color:col,lineHeight:1,...ex});
   const sm   = (sz,col=C.mist,ex={})=>({fontSize:sz,color:col,...ex});
   const pill = (ex={})=>({background:C.g2,border:`1px solid ${C.g1}`,borderRadius:14,padding:12,...ex});
   const nav  = <TopNav sk={sk} spots={SPOTS} defaultLoc={prefs.defaultLocation} prefs={prefs} onSpot={k=>{setSk(k);}} onSettings={()=>setScreen(screen==="settings"?"conditions":"settings")} screen={screen} onBack={()=>setScreen("conditions")}/>;
@@ -519,7 +519,7 @@ export default function App() {
           <div style={{width:4,height:4,borderRadius:"50%",background:rat.c}}/>{rat.t}
         </div>
         {/* Wave hero + compass panels */}
-        <div style={mn("3rem")}>{fmtWN(cond.waveH||0,prefs.waveUnit)}<span style={{fontSize:"1.2rem",fontWeight:400,color:C.mist}}> {fmtWU(prefs.waveUnit)}</span></div>
+        <div style={mn("3rem",C.pearl,{letterSpacing:"-.03em"})}>{fmtWN(cond.waveH||0,prefs.waveUnit)}<span style={{fontSize:"1.2rem",fontWeight:400,color:C.mist}}> {fmtWU(prefs.waveUnit)}</span></div>
         <div style={sm(".70rem",C.mist,{marginTop:2,marginBottom:10})}>{cond.period?`${Math.round(cond.period)}s period`:"—"}</div>
         <div style={{display:"flex",gap:8,marginBottom:10}}>
           <CompassPanel deg={cond.windDir??0} col={wcol} label="wind dir" rows={[["speed",fmtWind(cond.windSpeed,prefs.windUnit),wcol],["type",wcLbl(wc),wcol]]}/>
